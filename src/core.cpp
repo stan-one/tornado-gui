@@ -1,0 +1,127 @@
+#include "../include/core.hpp"
+
+using namespace std;
+
+ std::chrono::milliseconds  timeout = chrono::milliseconds(TIMEOUT);
+
+queue<datapack_fe_t> q_ui2core;  mutex m_ui2core; 
+queue<datapack_be_t> q_core2ui;  mutex m_core2ui; 
+queue<string> q_serial2core; mutex m_serial2core;
+queue<string> q_core2serial; mutex m_core2serial;
+vector<string> v_ports; 
+atomic<int> port_num{0};
+string port_list=NO_SELECTED;
+
+ bool operator==(const datapack_fd& lhs, const datapack_fd& rhs)
+{
+    return lhs.freq_pwm == rhs.freq_pwm &&
+           lhs.pwm_f1 == rhs.pwm_f1 &&
+           lhs.pwm_f2 == rhs.pwm_f2 &&
+           lhs.pwm_f3 == rhs.pwm_f3;
+}
+
+ bool operator==(const datapack_be& lhs, const datapack_be& rhs)
+{
+    return lhs.rpm_f1 == rhs.rpm_f1 &&
+           lhs.rpm_f2 == rhs.rpm_f2 &&
+           lhs.rpm_f3 == rhs.rpm_f3 &&
+           lhs.temperature == rhs.temperature;
+}
+
+bool port_set_flag{false};
+
+
+core::core(){}
+
+ void core::create_be_dp(){
+    string hold_res;
+    {
+        lock_guard<mutex> lk(m_serial2core);
+        if(!q_serial2core.empty()){
+            hold_res = q_serial2core.front();
+            q_serial2core.pop();
+        }
+    }
+
+    if(!hold_res.empty()){
+        stringstream ss(hold_res);
+        vector<string> result;
+        while( ss.good() ){
+            string substr; 
+            
+            getline( ss, substr, ';' );
+            result.push_back( substr );
+        }
+        if(result.size()!=4){
+            throw std::logic_error("message from pcb corrupted");
+        }
+        
+        core_be.rpm_f1 = stoi(result.at(0));
+        core_be.rpm_f2 = stoi(result.at(1));
+        core_be.rpm_f3 = stoi(result.at(2));
+        core_be.temperature = stoi(result.at(3));
+
+    }
+    {
+        lock_guard<mutex> lk(m_core2ui);
+            if(q_core2ui.size()<10){
+                q_core2ui.push(core_be);
+            }
+    }
+ }
+
+ void core::create_fe_dp(){
+    static datapack_fe_t fe_ans;
+    {
+        lock_guard<mutex> lk(m_ui2core);
+            if(!q_ui2core.empty()){
+                core_fe = q_ui2core.front();
+                q_ui2core.pop();
+            }
+    }
+    if(!(fe_ans == core_fe)){
+        fe_ans = core_fe;
+        string to_serial;
+        to_serial.append(to_string(core_fe.pwm_f1));
+        to_serial.push_back(SEPARATOR);
+        to_serial.append(to_string(core_fe.pwm_f2));
+        to_serial.push_back(SEPARATOR);
+        to_serial.append(to_string(core_fe.pwm_f3));
+        to_serial.push_back(SEPARATOR);
+        to_serial.append(to_string(core_fe.freq_pwm));
+        to_serial.push_back(END_OF_CHAR);
+        cout<<to_serial<<endl;
+        {
+            lock_guard<mutex> lk(m_core2serial);
+                if(q_core2serial.size()<3){
+                    q_core2serial.push(to_serial);
+                    to_serial.clear();
+                }
+        }
+    }
+ }
+
+ void core::load_serial_ports(){
+    vector<serial::PortInfo> devices_found = serial::list_ports();
+
+	vector<serial::PortInfo>::iterator iter = devices_found.begin();
+    
+    string hold;
+    //v_ports.push_back(string("---"));
+    //v_ports.push_back(string("/dev/pts/4"));
+    //port_list.push_back('\0');
+    //port_list.append("/dev/pts/4"); port_list.push_back('\0');
+	while( iter != devices_found.end() ){
+		serial::PortInfo device = *iter++;
+            hold = device.port;
+            hold.push_back('\0');
+            port_list.append(hold);
+            v_ports.push_back(hold);
+            hold.clear();
+	}
+ }
+
+ void core::run(){
+    create_be_dp();
+    create_fe_dp();
+ }
