@@ -90,6 +90,20 @@ bool graphics::deploy_ui(){
         ImGui::SameLine(); 
         ImGui::Text("RPM: %d", ui_be.rpm_f3);
 
+        ImGui::SliderInt("FAN 4", &ui_fe.pwm_f4, 0, 100); 
+        ImGui::SameLine(); 
+        ImGui::Text("RPM: %d", ui_be.rpm_f4);
+
+        ImGui::ColorEdit3("Color Fan 1", ui_fe.fan1_rgb);
+        ImGui::ColorEdit3("Color Fan 2", ui_fe.fan2_rgb);
+        ImGui::ColorEdit3("Color Fan 3", ui_fe.fan3_rgb);
+        ImGui::ColorEdit3("Color Fan 4", ui_fe.fan4_rgb);
+
+        ImGui::Checkbox("Switch element 1", &ui_fe.sw_1);
+        ImGui::SameLine(); 
+        ImGui::Checkbox("Switch element 2", &ui_fe.sw_2);
+        ImGui::Combo("LED Strip effects: ", &ui_fe.effect_selected, "EFFECT AA\0EFFECT BB\0");   
+
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"TEMPERATURE: %.1f", ui_be.temperature);
 
         ImGui::InputInt("FAN Hz", &ui_fe.freq_pwm, 100, 500);

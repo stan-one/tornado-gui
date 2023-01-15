@@ -9,13 +9,16 @@ extern queue<string> q_ports;
 
 serial_communication::serial_communication(string port, int baud_rate, serial::Timeout serial_timeout):
     serial::Serial(port, baud_rate, serial_timeout){
+    if(!this->isOpen()){
+        throw std::runtime_error("Serial port unavalible");
+    }
 };
 
 void serial_communication::serial_send_pcb(){
     {
         lock_guard<mutex> lk(m_core2serial);
         if(!q_core2serial.empty()){
-            cout<<"data in q_size: "<<q_core2serial.size()<<endl;
+            //cout<<"data in q_size: "<<q_core2serial.size()<<endl;
             serial2pcb = q_core2serial.front();
             q_core2serial.pop();
             this->write(serial2pcb);

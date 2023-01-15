@@ -33,6 +33,8 @@ using namespace std;
 #define DEFAULT_HZ 20000
 #define MAX_HZ 22000
 
+
+
 /**
  * @defgroup datapacks Datapacks
  * @brief structs that represent the information being passed between the UI and thr PCB
@@ -43,6 +45,14 @@ typedef struct datapack_fd{
     int pwm_f1 = 0;
     int pwm_f2 = 0;
     int pwm_f3 = 0;
+    int pwm_f4 = 0;
+    bool sw_1 = 0;
+    bool sw_2 = 0;
+    float fan1_rgb[3] = { 0.0f, 0.0f, 0.0f };
+    float fan2_rgb[3] = { 0.0f, 0.0f, 0.0f };
+    float fan3_rgb[3] = { 0.0f, 0.0f, 0.0f };
+    float fan4_rgb[3] = { 0.0f, 0.0f, 0.0f };
+    int effect_selected = 0;
     int freq_pwm = DEFAULT_HZ;
 }datapack_fe_t;
 
@@ -50,19 +60,29 @@ typedef struct datapack_be{
     int rpm_f1 = 0;
     int rpm_f2 = 0;
     int rpm_f3 = 0;
+    int rpm_f4 = 0;
+    int rpm_pump = 0;
     float temperature = 0;
 }datapack_be_t;
 
 /**
  * @}
  */
+
+
+extern queue<datapack_fe_t> q_ui2core;  extern mutex m_ui2core; 
+extern queue<datapack_be_t> q_core2ui;  extern mutex m_core2ui; 
+extern queue<string> q_serial2core; extern mutex m_serial2core;
+extern queue<string> q_core2serial; extern mutex m_core2serial;
+extern vector<string> v_ports; 
+extern atomic<int> port_num;
+
 class core{
     public:
     core();
-    void run();
     void load_serial_ports();
     
-    private:
+    
     /**
      * @brief Create a frond end datapack object
      * 
@@ -77,6 +97,7 @@ class core{
      * @brief Local datapacks. Used as storage for the current state of the app
      * @{
      */
+    private:
     datapack_fe_t core_fe;
     datapack_be_t core_be;
     /**

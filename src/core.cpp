@@ -4,12 +4,6 @@ using namespace std;
 
  std::chrono::milliseconds  timeout = chrono::milliseconds(TIMEOUT);
 
-queue<datapack_fe_t> q_ui2core;  mutex m_ui2core; 
-queue<datapack_be_t> q_core2ui;  mutex m_core2ui; 
-queue<string> q_serial2core; mutex m_serial2core;
-queue<string> q_core2serial; mutex m_core2serial;
-vector<string> v_ports; 
-atomic<int> port_num{0};
 string port_list=NO_SELECTED;
 
  bool operator==(const datapack_fd& lhs, const datapack_fd& rhs)
@@ -59,7 +53,7 @@ core::core(){}
         core_be.rpm_f1 = stoi(result.at(0));
         core_be.rpm_f2 = stoi(result.at(1));
         core_be.rpm_f3 = stoi(result.at(2));
-        core_be.temperature = stoi(result.at(3));
+        core_be.temperature = stof(result.at(3));
 
     }
     {
@@ -90,7 +84,6 @@ core::core(){}
         to_serial.push_back(SEPARATOR);
         to_serial.append(to_string(core_fe.freq_pwm));
         to_serial.push_back(END_OF_CHAR);
-        cout<<to_serial<<endl;
         {
             lock_guard<mutex> lk(m_core2serial);
                 if(q_core2serial.size()<3){
@@ -107,10 +100,10 @@ core::core(){}
 	vector<serial::PortInfo>::iterator iter = devices_found.begin();
     
     string hold;
-    //v_ports.push_back(string("---"));
-    //v_ports.push_back(string("/dev/pts/4"));
-    //port_list.push_back('\0');
-    //port_list.append("/dev/pts/4"); port_list.push_back('\0');
+    v_ports.push_back(string("---"));
+    v_ports.push_back(string("/dev/pts/4"));
+    port_list.push_back('\0');
+    port_list.append("/dev/pts/4"); port_list.push_back('\0');
 	while( iter != devices_found.end() ){
 		serial::PortInfo device = *iter++;
             hold = device.port;
@@ -121,7 +114,3 @@ core::core(){}
 	}
  }
 
- void core::run(){
-    create_be_dp();
-    create_fe_dp();
- }

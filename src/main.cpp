@@ -24,7 +24,8 @@ void run_core(){
     core app_engine;
     app_engine.load_serial_ports();
     while(run_gui){
-        app_engine.run();
+        app_engine.create_fe_dp();
+        app_engine.create_be_dp();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
