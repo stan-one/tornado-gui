@@ -16,6 +16,7 @@ using namespace std;
 #define LED_STRIP 0
 #define STRIP_SELECT 0
 #define EFFECT 0
+#define IMPOSSIBLE_VALUE -1
 TEST(core_test, ui2core){
     //setup
     datapack_fe_t fe_data = {PWM_FQ, PWM_FQ, PWM_FQ, PWM_FQ, 
@@ -38,16 +39,37 @@ TEST(core_test, serial2core){
     //setup
     datapack_be_t be_data;
     core test_core;
-    string data_from_serial = "1000;1000;1000;22.5#";
+    string data_from_serial = "1001;1002;1003;1004;1005;22.5#";
     q_serial2core.push(data_from_serial);
-    //test
+    //test string from pcb
     ASSERT_EQ(q_serial2core.size(), 1);
     test_core.create_be_dp();
     be_data = q_core2ui.front();
-    EXPECT_EQ(be_data.rpm_f1, RPM);
-    EXPECT_EQ(be_data.rpm_f2, RPM);
-    EXPECT_EQ(be_data.rpm_f3, RPM);
+    EXPECT_EQ(be_data.rpm_f1, RPM+1);
+    EXPECT_EQ(be_data.rpm_f2, RPM+2);
+    EXPECT_EQ(be_data.rpm_f3, RPM+3);
+    EXPECT_EQ(be_data.rpm_f4, RPM+4);
+    EXPECT_EQ(be_data.rpm_pump, RPM+5);
     EXPECT_EQ(be_data.temperature, TEMP);
+    //teardown
+    q_core2ui.pop();
+}
+
+
+TEST(core_test, corrupted_data){
+    core test_core;
+    datapack_be_t be_data;
+    string data_from_serial = "1001+1002;1AA3;1004;1005;";
+    q_serial2core.push(data_from_serial);
+    ASSERT_EQ(q_serial2core.size(), 1);
+    test_core.create_be_dp();
+    be_data = q_core2ui.front();
+    EXPECT_EQ(be_data.rpm_f1, IMPOSSIBLE_VALE);
+    EXPECT_EQ(be_data.rpm_f2, IMPOSSIBLE_VALE);
+    EXPECT_EQ(be_data.rpm_f3, IMPOSSIBLE_VALE);
+    EXPECT_EQ(be_data.rpm_f4, IMPOSSIBLE_VALE);
+    EXPECT_EQ(be_data.rpm_pump, IMPOSSIBLE_VALE);
+    EXPECT_EQ(be_data.temperature, IMPOSSIBLE_VALE);
 }
 
 TEST(core_test, serial_ports){

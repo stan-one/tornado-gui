@@ -21,14 +21,6 @@ string port_list=NO_SELECTED;
            lhs.freq_pwm == rhs.freq_pwm;
 }
 
- bool operator==(const datapack_be& lhs, const datapack_be& rhs)
-{
-    return lhs.rpm_f1 == rhs.rpm_f1 &&
-           lhs.rpm_f2 == rhs.rpm_f2 &&
-           lhs.rpm_f3 == rhs.rpm_f3 &&
-           lhs.temperature == rhs.temperature;
-}
-
 bool port_set_flag{false};
 
 
@@ -53,16 +45,25 @@ core::core(){}
             getline( ss, substr, ';' );
             result.push_back( substr );
         }
-        if(result.size()!=4){
-            throw std::logic_error("message from pcb corrupted");
+        if(result.size()!=INCOMING_PARAMS){
+            core_be.rpm_f1 = IMPOSSIBLE_VALE;
+            core_be.rpm_f2 = IMPOSSIBLE_VALE;
+            core_be.rpm_f3 = IMPOSSIBLE_VALE;
+            core_be.rpm_f4 = IMPOSSIBLE_VALE;
+            core_be.rpm_pump = IMPOSSIBLE_VALE;
+            core_be.temperature = IMPOSSIBLE_VALE;
         }
-        
+        else{
         core_be.rpm_f1 = stoi(result.at(0));
         core_be.rpm_f2 = stoi(result.at(1));
         core_be.rpm_f3 = stoi(result.at(2));
-        core_be.temperature = stof(result.at(3));
+        core_be.rpm_f4 = stoi(result.at(3));
+        core_be.rpm_pump = stoi(result.at(4));
+        core_be.temperature = stof(result.at(5));
+        }
 
     }
+
     {
         lock_guard<mutex> lk(m_core2ui);
             if(q_core2ui.size()<10){

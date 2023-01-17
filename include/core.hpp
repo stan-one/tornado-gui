@@ -34,6 +34,8 @@ using namespace std;
 #define MAX_HZ 22000
 #define MAX_LEDS_FAN 50
 #define MAX_LEDS_STRIP 200
+#define IMPOSSIBLE_VALE -1
+#define INCOMING_PARAMS 6
 
 
 /**
