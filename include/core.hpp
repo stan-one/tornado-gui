@@ -32,7 +32,8 @@ using namespace std;
 
 #define DEFAULT_HZ 20000
 #define MAX_HZ 22000
-
+#define MAX_LEDS_FAN 50
+#define MAX_LEDS_STRIP 200
 
 
 /**
@@ -48,11 +49,11 @@ typedef struct datapack_fd{
     int pwm_f4 = 0;
     bool sw_1 = 0;
     bool sw_2 = 0;
-    float fan1_rgb[3] = { 0.0f, 0.0f, 0.0f };
-    float fan2_rgb[3] = { 0.0f, 0.0f, 0.0f };
-    float fan3_rgb[3] = { 0.0f, 0.0f, 0.0f };
-    float fan4_rgb[3] = { 0.0f, 0.0f, 0.0f };
-    int effect_selected = 0;
+    int num_leds_fan = 0;
+    int num_leds_strip = 0;
+    int effect_selected_fan = 0;
+    int effect_selected_strip = 0;
+    int strip_select = 0;
     int freq_pwm = DEFAULT_HZ;
 }datapack_fe_t;
 
@@ -63,6 +64,8 @@ typedef struct datapack_be{
     int rpm_f4 = 0;
     int rpm_pump = 0;
     float temperature = 0;
+    float adc_12v = 0;
+    float adc_5v = 0;
 }datapack_be_t;
 
 /**

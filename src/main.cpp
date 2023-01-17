@@ -9,7 +9,7 @@ extern atomic<int> port_num;
 
 
 void gui(){
-    graphics control_panel(720, 480);
+    graphics control_panel(720, 600);
     while(true){
         control_panel.prereder();
         if(control_panel.deploy_ui()){

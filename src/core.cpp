@@ -11,7 +11,14 @@ string port_list=NO_SELECTED;
     return lhs.freq_pwm == rhs.freq_pwm &&
            lhs.pwm_f1 == rhs.pwm_f1 &&
            lhs.pwm_f2 == rhs.pwm_f2 &&
-           lhs.pwm_f3 == rhs.pwm_f3;
+           lhs.pwm_f3 == rhs.pwm_f3 &&
+           lhs.pwm_f4 == rhs.pwm_f4 &&
+           lhs.sw_1 == rhs.sw_1 &&
+           lhs.sw_2 == rhs.sw_2 &&
+           lhs.num_leds_fan == rhs.num_leds_fan &&
+           lhs.num_leds_strip == rhs.num_leds_strip &&
+           lhs.strip_select == rhs.strip_select &&
+           lhs.freq_pwm == rhs.freq_pwm;
 }
 
  bool operator==(const datapack_be& lhs, const datapack_be& rhs)
@@ -82,6 +89,27 @@ core::core(){}
         to_serial.push_back(SEPARATOR);
         to_serial.append(to_string(core_fe.pwm_f3));
         to_serial.push_back(SEPARATOR);
+        to_serial.append(to_string(core_fe.pwm_f4));
+        to_serial.push_back(SEPARATOR);
+
+        core_fe.sw_1 ? to_serial.append("1") : to_serial.append("0"); 
+        to_serial.push_back(SEPARATOR);
+        core_fe.sw_2 ? to_serial.append("1") : to_serial.append("0"); 
+        to_serial.push_back(SEPARATOR);
+
+        to_serial.append(to_string(core_fe.num_leds_fan));
+        to_serial.push_back(SEPARATOR);
+        to_serial.append(to_string(core_fe.num_leds_strip));
+        to_serial.push_back(SEPARATOR);
+
+        to_serial.append(to_string(core_fe.effect_selected_fan));
+        to_serial.push_back(SEPARATOR);
+        to_serial.append(to_string(core_fe.effect_selected_strip));
+        to_serial.push_back(SEPARATOR);
+
+        core_fe.strip_select ? to_serial.append("1") :to_serial.append("0");
+        to_serial.push_back(SEPARATOR);
+
         to_serial.append(to_string(core_fe.freq_pwm));
         to_serial.push_back(END_OF_CHAR);
         {
