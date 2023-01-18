@@ -14,7 +14,7 @@ find_package(GTest REQUIRED)
 include(GoogleTest)
 include_directories(${GTEST_INCLUDE_DIRS})
 
-
-add_executable(test_core test/test_core.cpp src/core.cpp src/serial_communication.cpp src/led_effect.cpp)
+SET(CMAKE_CXX_FLAGS, "-g")
+add_executable(test_core test/test_core.cpp src/core.cpp src/serial_communication.cpp src/led_effect.cpp )
 target_link_libraries(test_core GTest::GTest)
 target_link_libraries(test_core pthread serial ${CMAKE_DL_LIBS})

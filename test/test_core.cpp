@@ -43,13 +43,13 @@ TEST(core_test, ui2core){
     //setup
     effects_t selected = RANDOM_COLOR;
     datapack_fe_t fe_data = {PWM_FQ, PWM_FQ, PWM_FQ, PWM_FQ, 
-                            true, true, LED_STRIP_12V ,selected,STRIP_SELECT, DEF_FQ};
+                            true, true, LED_STRIP_12V ,selected, 0,DEF_FQ};
     core test_core;
     q_ui2core.push(fe_data);
     //test that the struct converts to the right string
     test_core.create_fe_dp();
     ASSERT_EQ(q_core2serial.size(), 1);
-    ASSERT_EQ(q_core2serial.front(), "$1122;1122;1122;1122;1;1;1;1;0;20000#");
+    ASSERT_EQ(q_core2serial.front(), "$1122;1122;1122;1122;1;1;1;20000#");
     q_core2serial.pop();
     //test that if the same struct is inserted again no string is generated
     q_ui2core.push(fe_data);

@@ -20,9 +20,9 @@ using namespace std;
 typedef struct led_effect
 {
     led_effect(){}
-    uint8_t R = 0;
-    uint8_t G = 0;
-    uint8_t B = 0;
+    int R = 0;
+    int G = 0;
+    int B = 0;
 }led_color_t;
 
 extern queue<string> q_core2serial;  

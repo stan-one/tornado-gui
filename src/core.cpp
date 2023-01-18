@@ -116,18 +116,6 @@ bool core::load_led_core(){
         core_fe.sw_2 ? to_serial.append("1") : to_serial.append("0"); 
         to_serial.push_back(SEPARATOR);
 
-        /*
-        to_serial.append(to_string(core_fe.num_leds_fan));
-        to_serial.push_back(SEPARATOR);
-        to_serial.append(to_string(core_fe.num_leds_strip));
-        to_serial.push_back(SEPARATOR);
-
-        to_serial.append(to_string(core_fe.effect_selected_fan));
-
-        to_serial.push_back(SEPARATOR);
-        to_serial.append(to_string(core_fe.effect_selected_strip));
-        to_serial.push_back(SEPARATOR);
-        */
         core_fe.strip_select ? to_serial.append("1") :to_serial.append("0");
         to_serial.push_back(SEPARATOR);
 

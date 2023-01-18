@@ -48,7 +48,7 @@ vector<string> *pulsating_random_color(){
 void run_effect(effects_t eff){
     switch (eff)
     {
-    case STATIC_COLOR:
+    case RANDOM_COLOR:
         {
             lock_guard<mutex> lk(m_core2serial);
             q_core2serial.push(pulsating_random_color()->at(0));
