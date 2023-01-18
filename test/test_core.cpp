@@ -1,6 +1,7 @@
 #include "../include/core.hpp"
 #include "../include/serial_communication.hpp"
 #include "../src/shared_data.cpp"
+#include "../include/led_effect.hpp"
 
 #include <gtest/gtest.h>
 
@@ -13,20 +14,42 @@ using namespace std;
 #define NUM_STRIP_FAN 0
 #define NUM_LED_STRIP 90
 #define NUM_LED_FAN 20
-#define LED_STRIP 0
+#define LED_STRIP_12V 1
 #define STRIP_SELECT 0
 #define EFFECT 0
 #define IMPOSSIBLE_VALUE -1
+
+#define TEST_LED_FAN 1
+#define LED_POSITION 3
+
+TEST(core_test, setup2core){
+    //setup
+    core test_core;
+    effects_t selected = RANDOM_COLOR;
+    led_effect one_led;
+    setup_data_t data = {NUM_LED_FAN, NUM_LED_STRIP, STRIP_SELECT};
+    //test
+    q_uisetup2core.push(data);
+    ASSERT_TRUE(test_core.load_led_core());
+    run_effect(RANDOM_COLOR);
+    one_led = get_led_fan(TEST_LED_FAN, LED_POSITION);
+
+    ASSERT_EQ(one_led.B, LED_RGB);
+    ASSERT_EQ(one_led.R, LED_RGB);
+    ASSERT_EQ(one_led.G, LED_RGB);
+}
+
 TEST(core_test, ui2core){
     //setup
+    effects_t selected = RANDOM_COLOR;
     datapack_fe_t fe_data = {PWM_FQ, PWM_FQ, PWM_FQ, PWM_FQ, 
-                            true, true, NUM_LED_FAN, NUM_LED_STRIP, EFFECT,EFFECT,STRIP_SELECT, DEF_FQ};
+                            true, true, LED_STRIP_12V ,selected,STRIP_SELECT, DEF_FQ};
     core test_core;
     q_ui2core.push(fe_data);
     //test that the struct converts to the right string
     test_core.create_fe_dp();
     ASSERT_EQ(q_core2serial.size(), 1);
-    ASSERT_EQ(q_core2serial.front(), "1122;1122;1122;1122;1;1;20;90;0;0;0;20000#");
+    ASSERT_EQ(q_core2serial.front(), "$1122;1122;1122;1122;1;1;1;1;0;20000#");
     q_core2serial.pop();
     //test that if the same struct is inserted again no string is generated
     q_ui2core.push(fe_data);

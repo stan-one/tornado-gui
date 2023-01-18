@@ -1,10 +1,19 @@
 #include "../include/core.hpp"
+#include "../include/led_effect.hpp"
 
 using namespace std;
 
  std::chrono::milliseconds  timeout = chrono::milliseconds(TIMEOUT);
 
 string port_list=NO_SELECTED;
+
+extern queue<datapack_fe_t> q_ui2core;  extern mutex m_ui2core; 
+extern queue<datapack_be_t> q_core2ui;  extern mutex m_core2ui; 
+extern queue<string> q_serial2core; extern mutex m_serial2core;
+extern queue<string> q_core2serial; extern mutex m_core2serial;
+extern queue<setup_data_t> q_uisetup2core;
+extern vector<string> v_ports; 
+extern atomic<int> port_num;
 
  bool operator==(const datapack_fd& lhs, const datapack_fd& rhs)
 {
@@ -15,9 +24,6 @@ string port_list=NO_SELECTED;
            lhs.pwm_f4 == rhs.pwm_f4 &&
            lhs.sw_1 == rhs.sw_1 &&
            lhs.sw_2 == rhs.sw_2 &&
-           lhs.num_leds_fan == rhs.num_leds_fan &&
-           lhs.num_leds_strip == rhs.num_leds_strip &&
-           lhs.strip_select == rhs.strip_select &&
            lhs.freq_pwm == rhs.freq_pwm;
 }
 
@@ -25,6 +31,17 @@ bool port_set_flag{false};
 
 
 core::core(){}
+
+
+bool core::load_led_core(){
+    if(q_uisetup2core.size()<0){
+        return false;
+    }
+    setup_data_t set = q_uisetup2core.front();
+    init_led_vector(set.num_leds_fan, set.num_leds_strip);
+    return true;
+}
+
 
  void core::create_be_dp(){
     string hold_res;
@@ -84,6 +101,7 @@ core::core(){}
     if(!(fe_ans == core_fe)){
         fe_ans = core_fe;
         string to_serial;
+        to_serial.append(UI_COMMAND);
         to_serial.append(to_string(core_fe.pwm_f1));
         to_serial.push_back(SEPARATOR);
         to_serial.append(to_string(core_fe.pwm_f2));
@@ -98,16 +116,18 @@ core::core(){}
         core_fe.sw_2 ? to_serial.append("1") : to_serial.append("0"); 
         to_serial.push_back(SEPARATOR);
 
+        /*
         to_serial.append(to_string(core_fe.num_leds_fan));
         to_serial.push_back(SEPARATOR);
         to_serial.append(to_string(core_fe.num_leds_strip));
         to_serial.push_back(SEPARATOR);
 
         to_serial.append(to_string(core_fe.effect_selected_fan));
+
         to_serial.push_back(SEPARATOR);
         to_serial.append(to_string(core_fe.effect_selected_strip));
         to_serial.push_back(SEPARATOR);
-
+        */
         core_fe.strip_select ? to_serial.append("1") :to_serial.append("0");
         to_serial.push_back(SEPARATOR);
 
@@ -115,11 +135,14 @@ core::core(){}
         to_serial.push_back(END_OF_CHAR);
         {
             lock_guard<mutex> lk(m_core2serial);
-                if(q_core2serial.size()<3){
+                if(q_core2serial.size()<4){
                     q_core2serial.push(to_serial);
                     to_serial.clear();
                 }
         }
+
+        run_effect(core_fe.effect_selected_fan);
+
     }
  }
 

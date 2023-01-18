@@ -4,14 +4,18 @@
 #include <cinttypes>
 #include <string>
 #include <random>
+#include "core.hpp"
 
 #define TIMESTEP_LED 200
 #define NUM_FANS 4
+#define SEPARATOR_COLOR ";"
+#define SEPARATOR_LED "|"
+#define END_CHAR "#"
+
+#define TEST true
+#define LED_RGB 12
 
 using namespace std;
-
-int num_led_fan = 0;
-int num_led_strip = 0;
 
 typedef struct led_effect
 {
@@ -19,16 +23,15 @@ typedef struct led_effect
     uint8_t R = 0;
     uint8_t G = 0;
     uint8_t B = 0;
-}led_effect_t;
+}led_color_t;
 
-std::random_device dev;
-std::mt19937 rng(dev());
-std::uniform_int_distribution<std::mt19937::result_type> dist(0,255);
+extern queue<string> q_core2serial;  
+extern mutex m_core2serial;
 
-vector<vector<led_effect_t>> led_fans;
-vector<led_effect_t> led_strip;
 
-void init_led_vector();
-void run_effect(int effect);
-vector<vector<string>> &pulsating_random_color(uint steps);
+
+void init_led_vector(int num_led_fan, int num_led_strip);
+led_color_t get_led_fan(int num_fan, int num_led);
+void run_effect(effects_t eff);
+vector<string> *pulsating_random_color();
 

@@ -6,6 +6,7 @@
 extern bool run_gui;
 extern vector<string> v_ports;
 extern atomic<int> port_num;
+extern atomic<bool> setup;
 
 
 void gui(){
@@ -23,6 +24,10 @@ void gui(){
 void run_core(){
     core app_engine;
     app_engine.load_serial_ports();
+    while(!setup){
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    app_engine.load_led_core();
     while(run_gui){
         app_engine.create_fe_dp();
         app_engine.create_be_dp();

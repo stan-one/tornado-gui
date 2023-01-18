@@ -6,7 +6,7 @@
  * @brief header file for core
  * @version 0.1
  * @date 2023-01-08
- * @author Stanimir Htistov
+ * @author Stanimir Hristov
  * @copyright Copyright (c) 2023
  * @class core Middelware between the front-end and the hardware. Acts as a translation and directioning unit 
  *        so that raw data comming from the UI or from the PCB can be routed
@@ -37,6 +37,11 @@ using namespace std;
 #define IMPOSSIBLE_VALE -1
 #define INCOMING_PARAMS 6
 
+#define UI_COMMAND "$"
+#define LED_COMMAND "@"
+
+typedef enum effects{STATIC_COLOR, RANDOM_COLOR} effects_t;
+
 
 /**
  * @defgroup datapacks Datapacks
@@ -51,13 +56,17 @@ typedef struct datapack_fd{
     int pwm_f4 = 0;
     bool sw_1 = 0;
     bool sw_2 = 0;
-    int num_leds_fan = 0;
-    int num_leds_strip = 0;
-    int effect_selected_fan = 0;
-    int effect_selected_strip = 0;
     int strip_select = 0;
+    effects_t effect_selected_fan;
+    int effect_selected_strip = 0;
     int freq_pwm = DEFAULT_HZ;
 }datapack_fe_t;
+
+typedef struct setup_data{
+    int num_leds_fan = 0;
+    int num_leds_strip = 0;
+    int strip_select = 0;
+}setup_data_t;
 
 typedef struct datapack_be{
     int rpm_f1 = 0;
@@ -75,19 +84,13 @@ typedef struct datapack_be{
  */
 
 
-extern queue<datapack_fe_t> q_ui2core;  extern mutex m_ui2core; 
-extern queue<datapack_be_t> q_core2ui;  extern mutex m_core2ui; 
-extern queue<string> q_serial2core; extern mutex m_serial2core;
-extern queue<string> q_core2serial; extern mutex m_core2serial;
-extern vector<string> v_ports; 
-extern atomic<int> port_num;
-
 class core{
     public:
     core();
     void load_serial_ports();
     
-    
+    bool load_led_core();
+
     /**
      * @brief Create a frond end datapack object
      * 

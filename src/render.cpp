@@ -2,16 +2,8 @@
 #include "../include/core.hpp"
 #include "../include/led_effect.hpp"
 
-extern queue<datapack_fe_t> q_ui2core;  extern mutex m_ui2core; 
-extern queue<datapack_be_t> q_core2ui;  extern mutex m_core2ui; 
-extern std::chrono::milliseconds timeout;
-extern string port_list;
-extern bool port_set_flag;
-extern atomic<int> port_num;
-extern  bool operator==(const datapack_fd& lhs, const datapack_fd& rhs);
-extern int num_led_fan;
-extern int num_led_strip;
 bool run_gui{true};
+
 
 
 graphics::graphics(int win_h, int win_w){
@@ -63,25 +55,29 @@ bool graphics::deploy_ui(){
         ImGui::Text("Select serial port:");
         ImGui::Combo("detected ports: ", &port_local, port_list.c_str());
 
-        ImGui::InputInt("Number LEDs Fan", &ui_fe.num_leds_fan, 1, MAX_LEDS_FAN);
-        if(ui_fe.num_leds_fan>=MAX_LEDS_FAN){
-            ui_fe.num_leds_fan=MAX_LEDS_FAN;
+        ImGui::InputInt("Number LEDs Fan", &setup_data.num_leds_fan, 1, MAX_LEDS_FAN);
+        if(setup_data.num_leds_fan>=MAX_LEDS_FAN){
+            setup_data.num_leds_fan=MAX_LEDS_FAN;
         }
-        else if(ui_fe.num_leds_fan<=0){
-            ui_fe.num_leds_fan=0;
+        else if(setup_data.num_leds_fan<=0){
+            setup_data.num_leds_fan=0;
         }
         
+        ImGui::InputInt("Number LEDs Strip", &setup_data.num_leds_strip, 1, MAX_LEDS_STRIP);
+        if(setup_data.num_leds_strip>=MAX_LEDS_STRIP){
+            setup_data.num_leds_strip=MAX_LEDS_STRIP;
+        }
+        else if(setup_data.num_leds_strip<=0){
+            setup_data.num_leds_strip=0;
+        }
 
-        ImGui::InputInt("Number LEDs Strip", &ui_fe.num_leds_strip, 1, MAX_LEDS_STRIP);
-        if(ui_fe.num_leds_strip>=MAX_LEDS_STRIP){
-            ui_fe.num_leds_strip=MAX_LEDS_STRIP;
-        }
-        else if(ui_fe.num_leds_strip<=0){
-            ui_fe.num_leds_strip=0;
-        }
+        ImGui::RadioButton("12V LED strip", &setup_data.strip_select, 0); ImGui::SameLine();
+        ImGui::RadioButton("5V LED strip", &setup_data.strip_select, 1);
 
         port_num = port_local;
         if(ImGui::Button("SAVE")){
+            q_uisetup2core.push(setup_data);
+            setup = true;
             port_set_flag = true;
         }
         ImGui::End();
@@ -116,11 +112,9 @@ bool graphics::deploy_ui(){
 
         ImGui::Text("RPM PUMP: %d", ui_be.rpm_pump);
 
-
-        ImGui::Combo("LED FAN effects", &ui_fe.effect_selected_fan, "EFFECT CC\0EFFECT DD\0");   
-
-        ImGui::RadioButton("12V LED strip", &ui_fe.strip_select, 0); ImGui::SameLine();
-        ImGui::RadioButton("5V LED strip", &ui_fe.strip_select, 1);
+        int i = 0; 
+        ImGui::Combo("LED FAN effects", &i, "EFFECT CC\0EFFECT DD\0");   
+        ui_fe.effect_selected_fan = static_cast<effects_t>(i);
 
         ImGui::Combo("LED Strip effects", &ui_fe.effect_selected_strip, "EFFECT AA\0EFFECT BB\0");   
         ImGui::Checkbox("Switch element 1", &ui_fe.sw_1);
