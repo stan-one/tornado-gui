@@ -128,8 +128,10 @@ bool core::load_led_core(){
                     to_serial.clear();
                 }
         }
-
-        run_effect(core_fe.effect_selected_fan);
+        if(current_effect != core_fe.effect_selected_fan){
+            current_effect = core_fe.effect_selected_fan;
+            run_effect(core_fe.effect_selected_fan);//has access to q_core2serial, mutex inside function
+        }
 
     }
  }

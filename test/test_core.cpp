@@ -22,7 +22,12 @@ using namespace std;
 #define TEST_LED_FAN 1
 #define LED_POSITION 3
 
-TEST(core_test, setup2core){
+#define LED_STRING_BEGIN "@12;12;12|"//len 9+1
+#define LED_STRIP_SIZE 182 //20*9+2, 20 leds begin char + end char
+
+
+
+TEST(led_test, setup_led){
     //setup
     core test_core;
     effects_t selected = RANDOM_COLOR;
@@ -37,7 +42,17 @@ TEST(core_test, setup2core){
     ASSERT_EQ(one_led.B, LED_RGB);
     ASSERT_EQ(one_led.R, LED_RGB);
     ASSERT_EQ(one_led.G, LED_RGB);
+    //test string
+    string hold;
+    hold = q_core2serial.front();
+    ASSERT_EQ(LED_STRING_BEGIN, hold.substr(0,10));
+
+    //tear down
+    queue<string> empty;
+    std::swap(q_core2serial, empty );
+    ASSERT_EQ(q_core2serial.size(), 0);
 }
+
 
 TEST(core_test, ui2core){
     //setup
@@ -48,14 +63,17 @@ TEST(core_test, ui2core){
     q_ui2core.push(fe_data);
     //test that the struct converts to the right string
     test_core.create_fe_dp();
-    ASSERT_EQ(q_core2serial.size(), 1);
+    ASSERT_EQ(q_core2serial.size(), 5);//setting + led effect
     ASSERT_EQ(q_core2serial.front(), "$1122;1122;1122;1122;1;1;1;20000#");
-    q_core2serial.pop();
+    //teardown, simulate that the data has been send to the pcb thru the serial communication thread
+    queue<string> empty;
+    std::swap(q_core2serial, empty );
     //test that if the same struct is inserted again no string is generated
     q_ui2core.push(fe_data);
     test_core.create_fe_dp();
     ASSERT_EQ(q_core2serial.size(), 0);
     //teardown
+    
 }
 
 TEST(core_test, serial2core){

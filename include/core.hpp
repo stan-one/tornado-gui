@@ -108,6 +108,7 @@ class core{
     private:
     datapack_fe_t core_fe;
     datapack_be_t core_be;
+    int current_effect;
     /**
      * @}
     */

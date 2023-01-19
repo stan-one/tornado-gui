@@ -33,5 +33,5 @@ extern mutex m_core2serial;
 void init_led_vector(int num_led_fan, int num_led_strip);
 led_color_t get_led_fan(int num_fan, int num_led);
 void run_effect(effects_t eff);
-vector<string> *pulsating_random_color();
+vector<string> &pulsating_random_color();
 
