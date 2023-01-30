@@ -1,11 +1,12 @@
 #include "../include/core.hpp"
 #include "../include/led_effect.hpp"
 
+
 using namespace std;
 
  std::chrono::milliseconds  timeout = chrono::milliseconds(TIMEOUT);
 
-string port_list=NO_SELECTED;
+string port_list;
 
 extern queue<datapack_fe_t> q_ui2core;  extern mutex m_ui2core; 
 extern queue<datapack_be_t> q_core2ui;  extern mutex m_core2ui; 
@@ -39,6 +40,11 @@ bool core::load_led_core(){
     }
     setup_data_t set = q_uisetup2core.front();
     init_led_vector(set.num_leds_fan, set.num_leds_strip);
+    {
+        string setup = SETUP_COMMAND + to_string(set.num_leds_fan) + SEPARATOR +  to_string(set.num_leds_strip) + END_CHAR;
+        lock_guard<mutex> lk(m_core2serial);
+        q_core2serial.push(setup);
+    }
     return true;
 }
 
@@ -76,7 +82,7 @@ bool core::load_led_core(){
         core_be.rpm_f3 = stoi(result.at(2));
         core_be.rpm_f4 = stoi(result.at(3));
         core_be.rpm_pump = stoi(result.at(4));
-        core_be.temperature = stof(result.at(5));
+        core_be.temperature = ((float)stoi(result.at(5)))/100;
         }
 
     }
@@ -116,9 +122,6 @@ bool core::load_led_core(){
         core_fe.sw_2 ? to_serial.append("1") : to_serial.append("0"); 
         to_serial.push_back(SEPARATOR);
 
-        core_fe.strip_select ? to_serial.append("1") :to_serial.append("0");
-        to_serial.push_back(SEPARATOR);
-
         to_serial.append(to_string(core_fe.freq_pwm));
         to_serial.push_back(END_OF_CHAR);
         {
@@ -142,10 +145,15 @@ bool core::load_led_core(){
 	vector<serial::PortInfo>::iterator iter = devices_found.begin();
     
     string hold;
+    #if TESTING_CORE == true
     v_ports.push_back(string("---"));
-    v_ports.push_back(string("/dev/pts/4"));
+    v_ports.push_back(string("/dev/pts/1"));
+    #endif
+    port_list.append(NO_SELECTED);
     port_list.push_back('\0');
-    port_list.append("/dev/pts/4"); port_list.push_back('\0');
+    #if TESTING_CORE == true
+    port_list.append("/dev/pts/1"); port_list.push_back('\0');
+    #endif
 	while( iter != devices_found.end() ){
 		serial::PortInfo device = *iter++;
             hold = device.port;

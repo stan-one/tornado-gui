@@ -5,10 +5,11 @@
 
 #include <gtest/gtest.h>
 
+
 using namespace std;
 
 #define DEF_FQ 20000
-#define PWM_FQ 1122
+#define PWM_FQ 66
 #define RPM 1000
 #define TEMP 22.5
 #define NUM_STRIP_FAN 0
@@ -30,12 +31,13 @@ using namespace std;
 TEST(led_test, setup_led){
     //setup
     core test_core;
-    effects_t selected = RANDOM_COLOR;
     led_effect one_led;
-    setup_data_t data = {NUM_LED_FAN, NUM_LED_STRIP, STRIP_SELECT};
+    setup_data_t data = {NUM_LED_FAN, NUM_LED_STRIP};
     //test
     q_uisetup2core.push(data);
     ASSERT_TRUE(test_core.load_led_core());
+    ASSERT_EQ(q_core2serial.front(), "&20;90#");
+    q_core2serial.pop();
     run_effect(RANDOM_COLOR);
     one_led = get_led_fan(TEST_LED_FAN, LED_POSITION);
 
@@ -56,15 +58,14 @@ TEST(led_test, setup_led){
 
 TEST(core_test, ui2core){
     //setup
-    effects_t selected = RANDOM_COLOR;
     datapack_fe_t fe_data = {PWM_FQ, PWM_FQ, PWM_FQ, PWM_FQ, 
-                            true, true, LED_STRIP_12V ,selected, 0,DEF_FQ};
+                            true, true, STATIC_COLOR, STATIC_COLOR, DEFAULT_HZ};
     core test_core;
     q_ui2core.push(fe_data);
     //test that the struct converts to the right string
     test_core.create_fe_dp();
-    ASSERT_EQ(q_core2serial.size(), 5);//setting + led effect
-    ASSERT_EQ(q_core2serial.front(), "$1122;1122;1122;1122;1;1;1;20000#");
+    ASSERT_EQ(q_core2serial.size(), 1);
+    ASSERT_EQ(q_core2serial.front(), "$66;66;66;66;1;1;20000#");
     //teardown, simulate that the data has been send to the pcb thru the serial communication thread
     queue<string> empty;
     std::swap(q_core2serial, empty );
@@ -80,7 +81,7 @@ TEST(core_test, serial2core){
     //setup
     datapack_be_t be_data;
     core test_core;
-    string data_from_serial = "1001;1002;1003;1004;1005;22.5#";
+    string data_from_serial = "1001;1002;1003;1004;1005;2250#";
     q_serial2core.push(data_from_serial);
     //test string from pcb
     ASSERT_EQ(q_serial2core.size(), 1);

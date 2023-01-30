@@ -20,7 +20,7 @@ vector<string> &pulsating_random_color(){
 
     led_color_t led;
     for(auto it_fans = led_fans.begin(); it_fans != led_fans.end(); ++it_fans){
-        #if TEST == true
+        #if TESTING_LED == true
             int R = LED_RGB; int G = LED_RGB; int B = LED_RGB;
         #else
             int R = dist(rng); int G = dist(rng); int B = dist(rng);
@@ -33,8 +33,8 @@ vector<string> &pulsating_random_color(){
     hold.append(LED_COMMAND);
     for(auto it_fans = led_fans.begin(); it_fans != led_fans.end(); ++it_fans){
         for(auto it_fan = it_fans->begin(); it_fan != it_fans->end(); ++it_fan){
-            hold.append(to_string(it_fan->G)); hold.append(SEPARATOR_COLOR);
-            hold.append(to_string(it_fan->R)); hold.append(SEPARATOR_COLOR);
+            hold.append(to_string(it_fan->G)); hold.append(SEPARATOR_STR);
+            hold.append(to_string(it_fan->R)); hold.append(SEPARATOR_STR);
             hold.append(to_string(it_fan->B));
             
             hold.append(SEPARATOR_LED);
@@ -46,7 +46,7 @@ vector<string> &pulsating_random_color(){
 }
 
 
-void run_effect(effects_t eff){
+void run_effect(int eff){
     switch (eff)
     {
     case RANDOM_COLOR:

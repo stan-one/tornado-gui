@@ -22,9 +22,7 @@
 
 #define END_OF_STRING "#"
 #define END_OF_CHAR '#'
-#define SEPARATOR ';'
 #define NO_SELECTED "---"
-
 using namespace std;
 
 

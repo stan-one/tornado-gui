@@ -14,7 +14,7 @@ graphics::graphics(int win_h, int win_w){
         //set up glfw version
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        window = glfwCreateWindow(win_w, win_h, "FAN CONTROL", NULL, NULL);
+        window = glfwCreateWindow(win_w, win_h, "PROJECT TORNADO: FAN CONTROL", NULL, NULL);
         if (window == NULL){
             throw std::runtime_error("COULD NOT CREATE WINDOW");
         }
@@ -48,10 +48,13 @@ void graphics::prereder(){
 }
 
 bool graphics::deploy_ui(){
-   
+   if(glfwWindowShouldClose(window)){
+    run_gui = false;
+    return true;
+   }
     if(!port_set_flag){
         static int port_local{0};
-        ImGui::Begin("setup");
+        ImGui::Begin("Setup Panel");
         ImGui::Text("Select serial port:");
         ImGui::Combo("detected ports: ", &port_local, port_list.c_str());
 
@@ -71,9 +74,6 @@ bool graphics::deploy_ui(){
             setup_data.num_leds_strip=0;
         }
 
-        ImGui::RadioButton("12V LED strip", &setup_data.strip_select, 0); ImGui::SameLine();
-        ImGui::RadioButton("5V LED strip", &setup_data.strip_select, 1);
-
         port_num = port_local;
         if(ImGui::Button("SAVE")){
             q_uisetup2core.push(setup_data);
@@ -91,7 +91,7 @@ bool graphics::deploy_ui(){
                 q_core2ui.pop();
             }
         }
-        ImGui::Begin("Fan control by Firemonkeyy");
+        ImGui::Begin("Fan control and LED control panel");
 
     
         ImGui::SliderInt("FAN 1", &ui_fe.pwm_f1, 0, 100); 
@@ -112,9 +112,7 @@ bool graphics::deploy_ui(){
 
         ImGui::Text("RPM PUMP: %d", ui_be.rpm_pump);
 
-        int i = 0; 
-        ImGui::Combo("LED FAN effects", &i, "EFFECT CC\0EFFECT DD\0");   
-        ui_fe.effect_selected_fan = static_cast<effects_t>(i);
+        ImGui::Combo("LED FAN effects", &ui_fe.effect_selected_fan, "EFFECT CC\0EFFECT DD\0");   
 
         ImGui::Combo("LED Strip effects", &ui_fe.effect_selected_strip, "EFFECT AA\0EFFECT BB\0");   
         ImGui::Checkbox("Switch element 1", &ui_fe.sw_1);
@@ -122,14 +120,12 @@ bool graphics::deploy_ui(){
         ImGui::Checkbox("Switch element 2", &ui_fe.sw_2);
         ImGui::InputInt("FAN Hz", &ui_fe.freq_pwm, 100, 500);
         if(ui_fe.freq_pwm>=MAX_HZ){
-            ui_fe.freq_pwm = 22000;    
+            ui_fe.freq_pwm = MAX_HZ;    
         }
         else if(ui_fe.freq_pwm<=0){
             ui_fe.freq_pwm = 0; 
         }
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),"TEMPERATURE: %.1f", ui_be.temperature);
-        ImGui::TextColored(ImVec4(0.66f, 0.0f, 1.0f, 1.0f),"REAL 12V: %.1f", ui_be.adc_12v);
-        ImGui::TextColored(ImVec4(0.66f, 0.0f, 1.0f, 1.0f),"REAL 5V: %.1f", ui_be.adc_5v);
         {
             lock_guard<mutex> lk(m_ui2core);
                 if(q_ui2core.size()<3 && !(ui_fe==ui_fe_ans)){
@@ -137,12 +133,6 @@ bool graphics::deploy_ui(){
                     q_ui2core.push(ui_fe);
                 }
         }
-
-        if (ImGui::Button("Close")){
-            run_gui = false;
-            ImGui::End();
-            return true;
-        }    
         ImGui::End();
         return false;
     }

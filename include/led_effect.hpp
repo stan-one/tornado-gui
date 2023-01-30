@@ -8,11 +8,10 @@
 
 #define TIMESTEP_LED 200
 #define NUM_FANS 4
-#define SEPARATOR_COLOR ";"
 #define SEPARATOR_LED "|"
 #define END_CHAR "#"
 
-#define TEST true
+#define TESTING_LED true
 #define LED_RGB 12
 
 using namespace std;
@@ -32,6 +31,6 @@ extern mutex m_core2serial;
 
 void init_led_vector(int num_led_fan, int num_led_strip);
 led_color_t get_led_fan(int num_fan, int num_led);
-void run_effect(effects_t eff);
+void run_effect(int eff);
 vector<string> &pulsating_random_color();
 

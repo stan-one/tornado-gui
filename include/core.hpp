@@ -37,10 +37,16 @@ using namespace std;
 #define IMPOSSIBLE_VALE -1
 #define INCOMING_PARAMS 6
 
+#define TESTING_CORE true
+
+#define SETUP_COMMAND "&"
 #define UI_COMMAND "$"
 #define LED_COMMAND "@"
 
-typedef enum effects{STATIC_COLOR, RANDOM_COLOR} effects_t;
+#define SEPARATOR_STR ";"
+#define SEPARATOR ';'
+
+enum effects{STATIC_COLOR, RANDOM_COLOR};
 
 
 /**
@@ -56,8 +62,7 @@ typedef struct datapack_fd{
     int pwm_f4 = 0;
     bool sw_1 = 0;
     bool sw_2 = 0;
-    int strip_select = 0;
-    effects_t effect_selected_fan;
+    int effect_selected_fan;
     int effect_selected_strip = 0;
     int freq_pwm = DEFAULT_HZ;
 }datapack_fe_t;
@@ -65,7 +70,6 @@ typedef struct datapack_fd{
 typedef struct setup_data{
     int num_leds_fan = 0;
     int num_leds_strip = 0;
-    int strip_select = 0;
 }setup_data_t;
 
 typedef struct datapack_be{
@@ -75,8 +79,6 @@ typedef struct datapack_be{
     int rpm_f4 = 0;
     int rpm_pump = 0;
     float temperature = 0;
-    float adc_12v = 0;
-    float adc_5v = 0;
 }datapack_be_t;
 
 /**
