@@ -85,12 +85,28 @@ typedef struct datapack_be{
  * @}
  */
 
-
+/**
+ * @brief Processes and passes informarion from the front UI to the PCB.
+ * 
+ */
 class core{
     public:
+    /**
+     * @brief Construct a new core object
+     * 
+     */
     core();
+    /**
+     * @brief Before the startup all avalible serial ports are listed. From the UI a user selects.
+     * 
+     */
     void load_serial_ports();
-    
+    /**
+     * @brief Configures the datastructures needed for the led effects
+     * 
+     * @return true 
+     * @return false 
+     */
     bool load_led_core();
 
     /**

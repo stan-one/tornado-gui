@@ -1,7 +1,4 @@
-#include "../include/render.hpp"
-#include "../include/core.hpp"
-#include "../include/serial_communication.hpp"
-#include <thread>
+#include "../include/main.h"
 
 extern bool run_gui;
 extern vector<string> v_ports;

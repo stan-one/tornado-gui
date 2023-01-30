@@ -147,12 +147,12 @@ bool core::load_led_core(){
     string hold;
     #if TESTING_CORE == true
     v_ports.push_back(string("---"));
-    v_ports.push_back(string("/dev/pts/1"));
+    v_ports.push_back(string("/dev/pts/2"));
     #endif
     port_list.append(NO_SELECTED);
     port_list.push_back('\0');
     #if TESTING_CORE == true
-    port_list.append("/dev/pts/1"); port_list.push_back('\0');
+    port_list.append("/dev/pts/2"); port_list.push_back('\0');
     #endif
 	while( iter != devices_found.end() ){
 		serial::PortInfo device = *iter++;

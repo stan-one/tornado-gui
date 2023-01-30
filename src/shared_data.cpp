@@ -2,6 +2,10 @@
 #include "../include/core.hpp"
 
 using namespace std;
+/**
+ * @brief all datastructures needed for the communication between threads
+ * @defgroup data Bridge Datatypes
+ */
 
 queue<datapack_fe_t> q_ui2core;   mutex m_ui2core; 
 queue<datapack_be_t> q_core2ui;   mutex m_core2ui; 

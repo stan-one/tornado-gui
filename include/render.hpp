@@ -21,13 +21,45 @@ extern atomic<int> port_num;
 extern atomic<bool> setup;
 extern  bool operator==(const datapack_fd& lhs, const datapack_fd& rhs);
 
+/**
+ * @brief A wrapper class around the imgui library. Improves ease of use.
+ * 
+ */
 class graphics{
     public:
+    /**
+     * @brief Construct a new graphics object.
+     * @todo At start up appears an ugly black window, find a way to remove it.
+     * @param win_h_in window hight
+     * @param win_w_in window with
+     */
     graphics(int win_h_in, int win_w_in);
+    /**
+     * @brief Pick up the events and prepare the next frame
+     * 
+     */
     void prereder();
+    /**
+     * @brief Represents the UI. if it returns false then the UI has to close
+     * 
+     * @return true 
+     * @return false 
+     */
     bool deploy_ui();
+    /**
+     * @brief Deploys the configuration data to the user
+     * 
+     */
     void render();
+    /**
+     * @brief destroys all the allocated objetcs
+     * @todo make this method the destructor of the class, this makes no sense
+     * 
+     * @return true 
+     * @return false 
+     */
     bool close();
+
     private:
     GLFWwindow* window{NULL};  
     ImGuiIO* io;
