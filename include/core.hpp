@@ -1,16 +1,3 @@
-/**
- * @mainpage Simple 3 fan control UI. Made using ImGui running on multiple threads
- * 
- * @file core.hpp
- * @author your name (you@domain.com)
- * @brief header file for core
- * @version 0.1
- * @date 2023-01-08
- * @author Stanimir Hristov
- * @copyright Copyright (c) 2023
- * @class core Middelware between the front-end and the hardware. Acts as a translation and directioning unit 
- *        so that raw data comming from the UI or from the PCB can be routed
- */
 
 #pragma once
 
