@@ -7,8 +7,8 @@ This project is a 3 part project; the PC GUI, the firmware running on the PCB an
 
 At the time of writing this 02/01/2023 the PCB has not been build yet so no real-hardware testing has been performed. All the software testing is included as well as documentation for the project.
 
-![alt text](https://freeimage.host/i/H1Vq0bV)
-![alt text](https://freeimage.host/i/H1VqN5v)
+![alt text](https://iili.io/H1Vq0bV.png)
+![alt text](https://iili.io/H1VqN5v.png)
 
 ## Authors
 
