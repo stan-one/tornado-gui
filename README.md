@@ -19,7 +19,7 @@ At the time of writing this 02/01/2023 the PCB has not been build yet so no real
 
 #### Is this a ready to use project
 
-No, I havent build the PCB yeat and I havent tested it on my own PC. If you happen to order, assamble and test the desing before I do, you will be a true pioneer :)
+No, I havent build the PCB yet and I havent tested it on my own PC. If you happen to order, assamble and test the desing before I do, you will be a true pioneer :)
 
 #### What OS does the PC software support
 
@@ -32,7 +32,7 @@ Doxygen files included in the test/ folders.
 
 ## Deployment
 
-For the GUI, to make project, run the following commands in the project folder
+For the GUI, to make the project, run the following commands in the project folder
 ```bash
 mkdir build
 cd build
