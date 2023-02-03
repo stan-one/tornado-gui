@@ -45,9 +45,8 @@ This will build the GUI and create a executable.
 
 For the firmware, you need to install STM32CubeIDE and load the project.
 
-For the PCB you will need to install KiCAD6. The project includes non-standart components, so its likely that you will have missing footprints or symbols. If thats the case go to [Ultralibrarian][1] and add them.
+For the PCB you will need to install KiCAD6. The project includes non-standart components, so its likely that you will have missing footprints or symbols. If thats the case go to [Ultra librarian](https://www.ultralibrarian.com/)
+and add them.
 
 The componets are avalible in the JLCPCB part cataloge so the pcbs can be ordered assambled from factory.
-
-[1]: https://www.ultralibrarian.com/ Ultralibrarian
 
